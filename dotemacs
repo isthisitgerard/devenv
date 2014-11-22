@@ -1,0 +1,121 @@
+;;; dotemacs --- Fixing weird quirks and poor defaults
+
+;; Author: Gerard Murphy
+;; Borrowed from: Phil Hagelberg and Aaron Bedra
+
+;; Smarter buffer and file opening
+(ido-mode t)
+(setq ido-enable-flex-matching t)
+
+;; Cleanup visuals
+;;(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq inhibit-splash-screen t
+      initial-scratch-message nil
+      initial-major-mode 'text-mode)
+
+;; Ensure unique buffer names
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
+;; Return to previous file location
+(require 'saveplace)
+(setq-default save-place t)
+
+;; Useful bindings
+(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(mouse-wheel-mode t)
+(line-number-mode 1)
+(column-number-mode 1)
+(setq scroll-step 1)
+(setq x-select-enable-clipboard t
+      x-select-enable-primary t
+      save-interprogram-paste-before-kill t
+      apropos-do-all t
+      mouse-yank-at-point t
+      require-final-newline t
+      visible-bell t
+      ediff-window-setup-function 'ediff-setup-windows-plain
+      save-place-file (concat user-emacs-directory "places"))
+
+;; Backup files 
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
+(setq backup-by-copying t)
+(setq delete-old-versions t
+  kept-new-versions 6
+  kept-old-versions 2
+  version-control t)
+
+;; Useful defaults for coding
+(show-paren-mode 1)
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4 
+      indent-tabs-mode nil) 
+
+
+;; ===== Enable CUA mode (windows copy/paste behaviour) =====
+(cua-mode t)
+(setq cua-auto-tabify-rectangles nil)
+(transient-mark-mode 1) ;;
+(setq cua-keep-region-after-copy t) ;; 
+
+
+;; ===== Color theme =====
+;; Color theme
+;; cd ~/.emacs.d
+;; wget http://download.savannah.gnu.org/releases/color-theme/color-theme-6.6.0.tar.gz
+;; wget http://github.com/juba/color-theme-tangotango/raw/master/color-theme-tangotango.el
+;; tar -xvf color-theme-6.6.0.tar.gz
+;; ln -s color-theme-6.6.0 color-theme
+;; mv color-theme-tangotango.el color-theme/themes/
+
+(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/color-theme/")
+(add-to-list 'load-path "~/.emacs.d/color-theme/themes")
+(require 'color-theme)
+(setq color-theme-load-all-themes nil)
+
+(require 'color-theme-tangotango)
+
+;; select theme - first list element is for windowing system, second is for console/terminal
+;; Source : http://www.emacswiki.org/emacs/ColorTheme#toc9
+(setq color-theme-choices 
+      '(color-theme-tangotango color-theme-tangotango))
+
+;; default-start
+(funcall (lambda (cols)
+    	   (let ((color-theme-is-global nil))
+    	     (eval 
+    	      (append '(if (window-system))
+    		      (mapcar (lambda (x) (cons x nil)) 
+    			      cols)))))
+    	 color-theme-choices)
+
+;; test for each additional frame or console
+(require 'cl)
+(fset 'test-win-sys 
+      (funcall (lambda (cols)
+    		 (lexical-let ((cols cols))
+    		   (lambda (frame)
+    		     (let ((color-theme-is-global nil))
+		       ;; must be current for local ctheme
+		       (select-frame frame)
+		       ;; test winsystem
+		       (eval 
+			(append '(if (window-system frame)) 
+				(mapcar (lambda (x) (cons x nil)) 
+					cols)))))))
+    	       color-theme-choices ))
+;; hook on after-make-frame-functions
+(add-hook 'after-make-frame-functions 'test-win-sys)
+
+(color-theme-tangotango)

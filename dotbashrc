@@ -1,0 +1,29 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific aliases and functions
+
+#export JAVA_HOME=/usr/lib/jvm/jre-1.6.0-openjdk.x86_64
+export EDITOR=emacs
+
+
+# Basic 
+e() { emacs "$@" & }
+alias erc="emacs ~/.bashrc &"
+alias src="source ~/.bashrc"
+alias h='history'
+alias ..='cd ..'
+alias c='clear'
+alias m='more'
+alias rm='rm -I --preserve-root'
+
+
+
+
+
+# SVN
+alias svn-diff="svn diff --diff-cmd meld" 
