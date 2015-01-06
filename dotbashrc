@@ -5,14 +5,16 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# User specific aliases and functions
+# Setup PATH
+export PATH=${HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=/home/gmurphy/src/restserver/gtirestserver/branches/dds_dev/libs
 
-#export JAVA_HOME=/usr/lib/jvm/jre-1.6.0-openjdk.x86_64
+# User specific aliases and functions
 export EDITOR=emacs
+export JAVA_HOME=/usr/lib/jvm/jre-1.6.0-openjdk.x86_64
 
 
 # Basic 
-e() { emacs "$@" & }
 alias erc="emacs ~/.bashrc &"
 alias src="source ~/.bashrc"
 alias h='history'
@@ -22,8 +24,19 @@ alias m='more'
 alias rm='rm -I --preserve-root'
 
 
-
+e() { emacs "$@" & }
 
 
 # SVN
-alias svn-diff="svn diff --diff-cmd meld" 
+alias svn-diff="svn diff --diff-cmd meld"
+sg() { grep -Iirs --exclude-dir=".svn" "$@" . ; }
+gc() { grep -irs --include=\*.{c,cc,cpp,h} --exclude-dir=".svn" "$@" . ; }
+ff() { find . -not -iwholename "*.svn*" -iname "*$@*" ; }
+
+
+# GTI
+alias start-hbase="/home/gmurphy/tools/hbase/bin/start-hbase.sh ; /home/gmurphy/tools/hbase/bin/hbase-daemon.sh start thrift"
+alias stop-hbase="/home/gmurphy/tools/hbase/bin/hbase-daemon.sh stop thrift ; /home/gmurphy/tools/hbase/bin/stop-hbase.sh"
+
+
+
